@@ -24,6 +24,10 @@ class Robox
 
 public:
 
+   Robox();
+
+   ~Robox();
+
    void begin();
 
    void run();
@@ -40,6 +44,7 @@ public:
 
 private:
 
+   bool connected;
 
 };
 

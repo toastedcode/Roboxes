@@ -12,6 +12,16 @@ static const int DISTANCE_TRIGGER_PIN = 13;
 static const int DISTANCE_ECHO_PIN = 15;
 static const int MAX_DISTANCE_CM = 200;
 
+Robox::Robox() :
+   connected(false)
+{
+}
+
+Robox::~Robox()
+{
+  
+}
+
 void Robox::begin()
 {
    //
@@ -35,11 +45,11 @@ void Robox::begin()
    // Initialize components.
    //
 
-   motors.drive(0, 0);
+   motors.drive(Motor::MIN_SPEED, MotorPair::MIN_YAW);
 
    for (int i = SERVO_FIRST; i < SERVO_LAST; i++)
    {
-      servos[i].rotate(0);
+      servos[i].rotate(ServoMotor::MIN_ANGLE);
    }
 
    follow.setEnabled(false);

@@ -3,6 +3,11 @@
 
 WidgetLCD BlynkInterface::lcd(V1);
 
+bool BlynkInterface::isConnected()
+{
+  return (Blynk.connected());
+}
+
 void BlynkInterface::lcdPrintf(
   const int& col,
   const int& row,

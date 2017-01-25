@@ -10,6 +10,8 @@
 // Go to the Project Settings (nut icon).
 char auth[] = "0c5a1145fe3c4cb693c9ef09c9eaf8c8";
 
+bool connected = false;
+
 void setup()
 {
    Serial.begin(9600);
@@ -25,6 +27,12 @@ void setup()
 
 void loop()
 {
+   if (!connected && BlynkInterface::isConnected())
+   {
+      BlynkInterface::lcdPrintf(0, 0, "Connected!");
+      connected = true;  
+   }
+   
    Blynk.run();
 
    MyRobox.run();

@@ -1,5 +1,7 @@
 #pragma once
 
+#define BLYNK_PRINT Serial    // Comment this out to disable prints and save space
+
 #include "BlynkSimpleEsp8266.h"
 #include "Motor.hpp"
 #include "Robox.hpp"
@@ -33,19 +35,29 @@ static const int COUNTERCLOCKWISE = Motor::MIN_SPEED;
 
 class BlynkInterface
 {
-  static void lcdPrintf(
-     const int& col,
-     const int& row,
-     char* format);
 
-  static void lcdClear();
+public:
+  
+   static bool isConnected();
+  
+   static void lcdPrintf(
+      const int& col,
+      const int& row,
+      char* format);
+
+   static void lcdClear();
 
 private:
 
-  static WidgetLCD lcd;
+   static WidgetLCD lcd;
 };
 
 WidgetLCD BlynkInterface::lcd(V1);
+
+inline bool BlynkInterface::isConnected()
+{
+  return (Blynk.connected());
+}
 
 inline void BlynkInterface::lcdPrintf(
   const int& col,
