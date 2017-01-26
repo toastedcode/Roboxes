@@ -1,16 +1,22 @@
-#include <>ESP8266WiFi.h>
+#include <ESP8266WiFi.h>
 
 #include "EepromUtils.hpp"
+#include "WifiUtils.hpp"
 
 const String WIFI_AP_SSID = "ROBOXES_AP";
 
 const int CONNECTION_TIMEOUT = 10;
 
+bool WifiUtils::isConnected()
+{
+   return (WiFi.status() == WL_CONNECTED);
+}
+
 void WifiUtils::setupWifi()
 {
    WifiConfig wifiConfig = ConfigServer::getWifiConfig();
 
-   Logger::logDebug("Connecting to Wifi network %s", wifiConfig.ssid);
+   Serial.printf("Connecting to Wifi network %s", wifiConfig.ssid);
 
    WiFi.mode(WIFI_STA);
    WiFi.begin(wifiConfig.ssid, wifiConfig.password);
@@ -33,6 +39,8 @@ void WifiUtils::setupWifi()
    else
    {
       Serial.printf("failure!  Could not connect to %s\n", wifiConfig.ssid);
+
+      Serial.printf("Starting configuration AP: %s\n", WIFI_AP_SSID.c_str());
 
       WiFi.mode(WIFI_AP);
       WiFi.softAP(WIFI_AP_SSID.c_str(), "");

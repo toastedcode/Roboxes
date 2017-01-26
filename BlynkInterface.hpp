@@ -43,7 +43,7 @@ public:
    static void lcdPrintf(
       const int& col,
       const int& row,
-      char* format);
+      const char* format);
 
    static void lcdClear();
 
@@ -62,7 +62,7 @@ inline bool BlynkInterface::isConnected()
 inline void BlynkInterface::lcdPrintf(
   const int& col,
   const int& row,
-  char* format)
+  const char* format)
 {
    lcd.print(col, row, format);
 }
