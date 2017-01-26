@@ -35,6 +35,7 @@ void ServoMotor::attach(
    this->pin = pin;
 
    pinMode(pin, OUTPUT);
+   servo.attach(pin);
 }
 
 inline int ServoMotor::getAngle()

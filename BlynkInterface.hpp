@@ -125,36 +125,68 @@ BLYNK_WRITE(V9)
 // V12: joystick
 BLYNK_WRITE(V12)
 {
-   BLYNK_PRINT.printf("motors.drive(%d, %d)\n", param[0].asInt(), param[1].asInt());
-   MyRobox.motors.drive(param[0].asInt(), param[1].asInt());
+   BLYNK_PRINT.printf("motors.drive(%d, %d)\n", param[1].asInt(), param[0].asInt());
+   MyRobox.motors.drive(param[1].asInt(), param[0].asInt());
 }
 
 // V13: d-pad up
 BLYNK_WRITE(V13)
 {
-   BLYNK_PRINT.printf("motors.forward(%d)\n", Motor::MAX_SPEED);
-   MyRobox.motors.forward(Motor::MAX_SPEED);
+   if (param.asInt())
+   {
+     BLYNK_PRINT.printf("motors.forward(%d)\n", Motor::MAX_SPEED);
+     MyRobox.motors.forward(Motor::MAX_SPEED);
+   }
+   else
+   {
+     BLYNK_PRINT.printf("motors.stop()\n");
+     MyRobox.motors.stop();
+   }
 }
 
 // V14: d-pad down
 BLYNK_WRITE(V14)
 {
-   BLYNK_PRINT.printf("motors.reverse(%d)\n", Motor::MIN_SPEED);
-   MyRobox.motors.reverse(Motor::MIN_SPEED);
+   if (param.asInt())
+   {
+     BLYNK_PRINT.printf("motors.reverse(%d)\n", Motor::MIN_SPEED);
+     MyRobox.motors.reverse(Motor::MIN_SPEED);
+   }
+   else
+   {
+     BLYNK_PRINT.printf("motors.stop()\n");
+     MyRobox.motors.stop();
+   }
 }
 
 // V15: d-pad left
 BLYNK_WRITE(V15)
 {
-   BLYNK_PRINT.printf("motors.rotate(%d)\n", COUNTERCLOCKWISE);
-   MyRobox.motors.rotate(COUNTERCLOCKWISE);
+   if (param.asInt())
+   {
+      BLYNK_PRINT.printf("motors.rotate(%d)\n", COUNTERCLOCKWISE);
+      MyRobox.motors.rotate(COUNTERCLOCKWISE);
+   }
+   else
+   {
+     BLYNK_PRINT.printf("motors.stop()\n");
+     MyRobox.motors.stop();
+   }
 }
 
 // V16: d-pad right
 BLYNK_WRITE(V16)
 {
-   BLYNK_PRINT.printf("motors.rotate(%d)\n", CLOCKWISE);
-   MyRobox.motors.rotate(CLOCKWISE);
+   if (param.asInt())
+   {
+      BLYNK_PRINT.printf("motors.rotate(%d)\n", CLOCKWISE);
+      MyRobox.motors.rotate(CLOCKWISE);
+   }
+   else
+   {
+     BLYNK_PRINT.printf("motors.stop()\n");
+     MyRobox.motors.stop();
+   }
 }
 
 // V17: distance sensor
