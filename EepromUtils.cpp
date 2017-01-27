@@ -5,11 +5,11 @@
 
 // **************************************************************************
 //                                 Constants
-// **************************0************************************************
+// **************************************************************************
  
 typedef char EepromStamp[12];
    
-static const EepromStamp EEPROM_STAMP = "roboxes.cot";
+static const EepromStamp EEPROM_STAMP = "roboxes.com";
   
 static const int EEPROM_BEGIN_ADDR = 0;
   

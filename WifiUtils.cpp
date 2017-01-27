@@ -1,6 +1,5 @@
 #include <ESP8266WiFi.h>
 
-#include "EepromUtils.hpp"
 #include "WifiUtils.hpp"
 
 const String WIFI_AP_SSID = "ROBOXES_AP";
@@ -12,15 +11,14 @@ bool WifiUtils::isConnected()
    return (WiFi.status() == WL_CONNECTED);
 }
 
-void WifiUtils::setupWifi()
+void WifiUtils::setupWifi(
+  const char* ssid,
+  const char* password)
 {
-   WifiConfig wifiConfig;
-   EepromUtils::getWifiConfig(wifiConfig);
-
-   Serial.printf("Connecting to Wifi network %s", wifiConfig.ssid);
+   Serial.printf("Connecting to Wifi network %s", ssid);
 
    WiFi.mode(WIFI_STA);
-   WiFi.begin(wifiConfig.ssid, wifiConfig.password);
+   WiFi.begin(ssid, password);
 
    int secondsToConnect = 0;
 
@@ -36,11 +34,11 @@ void WifiUtils::setupWifi()
    if (WiFi.status() == WL_CONNECTED)
    {
       Serial.println("success!");
-      Serial.printf("Connected to %s at %s\n", wifiConfig.ssid, WiFi.localIP().toString().c_str());
+      Serial.printf("Connected to %s at %s\n", ssid, WiFi.localIP().toString().c_str());
    }
    else
    {
-      Serial.printf("failure!  Could not connect to %s\n", wifiConfig.ssid);
+      Serial.printf("failure!  Could not connect to %s\n", ssid);
 
       Serial.printf("Starting configuration AP: %s\n", WIFI_AP_SSID.c_str());
 

@@ -9,9 +9,7 @@
 #include "Roboxes.h"
 #include "WifiUtils.hpp"
 
-// You should get Auth Token in the Blynk App.
-// Go to the Project Settings (nut icon).
-char auth[] = "0c5a1145fe3c4cb693c9ef09c9eaf8c8";
+char* authCode = "0c5a1145fe3c4cb693c9ef09c9eaf8c8";
 
 enum RoboxState
 {
@@ -22,6 +20,9 @@ enum RoboxState
    READY
 };
 
+WifiConfig wifiConfig;
+DeviceConfig deviceConfig;
+
 RoboxState state = INIT;
 
 void setup()
@@ -30,8 +31,6 @@ void setup()
 
    Serial.println("*** Roboxes.com ***");
    Serial.println("");
-
-   EepromUtils::begin();
 }
 
 void loop()
@@ -40,26 +39,34 @@ void loop()
    {
       Serial.println("Setting up wifi");
       state = SETUP_WIFI;
-      WifiUtils::setupWifi();
+      
+      EepromUtils::begin();
+      EepromUtils::getWifiConfig(wifiConfig);
+      EepromUtils::getDeviceConfig(deviceConfig);
+
+      Serial.println("Device config:"); 
+      Serial.printf("   Device name: %s\n", deviceConfig.deviceName);
+      Serial.printf("   Authorization code: %s\n", deviceConfig.authCode);
+      Serial.printf("   SSID: %s\n", wifiConfig.ssid);
+      Serial.printf("   Password: %s\n", wifiConfig.password);
+      
+      WifiUtils::setupWifi(wifiConfig.ssid, wifiConfig.password);
    }
    else if (state == SETUP_WIFI)
    {
-       if (WifiUtils::isConnected() == true)
-       {
-          DeviceConfig deviceConfig;
-          EepromUtils::getDeviceConfig(deviceConfig);
-   
-          Serial.printf("Connecting to Blynk server. (auth code = %s)\n", deviceConfig.authCode);
-          state = SETUP_BLYNK;
-          Blynk.config(deviceConfig.authCode);
-       }
-       else
-       {
-          Serial.println("Waiting for wifi config.");
-          state = WIFI_CONFIG;
-       }
+      if (WifiUtils::isConnected() == true)
+      {
+         Serial.printf("Connecting to Blynk server. (auth code = \"%s\")\n", deviceConfig.authCode);
+         state = SETUP_BLYNK;
+         Blynk.config(deviceConfig.authCode);
+      }
+      else
+      {
+         Serial.println("Waiting for wifi config.");
+         state = WIFI_CONFIG;
+      }
 
-       ConfigServer::begin();
+      ConfigServer::begin();
    }
    else if (state == WIFI_CONFIG)
    {
