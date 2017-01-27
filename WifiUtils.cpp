@@ -14,7 +14,8 @@ bool WifiUtils::isConnected()
 
 void WifiUtils::setupWifi()
 {
-   WifiConfig wifiConfig = ConfigServer::getWifiConfig();
+   WifiConfig wifiConfig;
+   EepromUtils::getWifiConfig(wifiConfig);
 
    Serial.printf("Connecting to Wifi network %s", wifiConfig.ssid);
 
@@ -34,7 +35,8 @@ void WifiUtils::setupWifi()
 
    if (WiFi.status() == WL_CONNECTED)
    {
-      Serial.printf("success!  Connected to %s at %s\n", wifiConfig.ssid, WiFi.localIP().toString().c_str());
+      Serial.println("success!");
+      Serial.printf("Connected to %s at %s\n", wifiConfig.ssid, WiFi.localIP().toString().c_str());
    }
    else
    {

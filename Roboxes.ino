@@ -31,12 +31,7 @@ void setup()
    Serial.println("*** Roboxes.com ***");
    Serial.println("");
 
-   //Blynk.begin(auth, "TostNet", "t0stn3t5");
-   //Blynk.begin(auth, "AndroidAP", "iamabug0929");
-
    EepromUtils::begin();
-
-   MyRobox.begin();
 }
 
 void loop()
@@ -49,20 +44,22 @@ void loop()
    }
    else if (state == SETUP_WIFI)
    {
-       ConfigServer::run();
-    
        if (WifiUtils::isConnected() == true)
        {
-          Serial.println("Connecting to Blynk server.");
+          DeviceConfig deviceConfig;
+          EepromUtils::getDeviceConfig(deviceConfig);
+   
+          Serial.printf("Connecting to Blynk server. (auth code = %s)\n", deviceConfig.authCode);
           state = SETUP_BLYNK;
-           Blynk.config(ConfigServer::getDeviceConfig().authCode);
+          Blynk.config(deviceConfig.authCode);
        }
        else
        {
           Serial.println("Waiting for wifi config.");
           state = WIFI_CONFIG;
-          ConfigServer::begin();
        }
+
+       ConfigServer::begin();
    }
    else if (state == WIFI_CONFIG)
    {
@@ -75,8 +72,9 @@ void loop()
       
       if (BlynkInterface::isConnected())
       {
-        Serial.println("Robox is ready.");
+         Serial.println("Robox is ready.");
          state = READY;
+         MyRobox.begin();
          
          BlynkInterface::lcdPrintf(0, 0, "Robox Online");
          BlynkInterface::lcdPrintf(0, 0, WiFi.localIP().toString().c_str());

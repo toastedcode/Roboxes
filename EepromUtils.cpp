@@ -1,6 +1,7 @@
- #include <EEPROM.h>
+#include <Arduino.h>
+#include <EEPROM.h>
 
- #include "EepromUtils.hpp"
+#include "EepromUtils.hpp"
 
 // **************************************************************************
 //                                 Constants
@@ -8,7 +9,7 @@
  
 typedef char EepromStamp[12];
    
-static const EepromStamp EEPROM_STAMP = "roboxes.com";
+static const EepromStamp EEPROM_STAMP = "roboxes.cot";
   
 static const int EEPROM_BEGIN_ADDR = 0;
   
@@ -29,13 +30,10 @@ static const int WIFI_CONFIG_EEPROM_ADDR = DEVICE_CONFIG_EEPROM_ADDR + sizeof(De
    initializeEeprom();
  }
 
-DeviceConfig EepromUtils::getDeviceConfig()
-{
-   DeviceConfig deviceConfig;
-  
-   EEPROM.get(DEVICE_CONFIG_EEPROM_ADDR, deviceConfig);
-
-   return (deviceConfig);  
+void EepromUtils::getDeviceConfig(
+  DeviceConfig& deviceConfig)
+{ 
+   EEPROM.get(DEVICE_CONFIG_EEPROM_ADDR, deviceConfig); 
 }
 
 void EepromUtils::setDeviceConfig(
@@ -45,13 +43,10 @@ void EepromUtils::setDeviceConfig(
    EEPROM.commit();
 }
 
-WifiConfig EepromUtils::getWifiConfig()
+void EepromUtils::getWifiConfig(
+     WifiConfig& wifiConfig)
 {
-   WifiConfig wifiConfig;
-  
    EEPROM.get(WIFI_CONFIG_EEPROM_ADDR, wifiConfig);
-
-   return (wifiConfig);  
 }
 
 void EepromUtils::setWifiConfig(
