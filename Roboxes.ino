@@ -82,9 +82,10 @@ void loop()
          Serial.println("Robox is ready.");
          state = READY;
          MyRobox.begin();
-         
+
+         BlynkInterface::lcdClear();
          BlynkInterface::lcdPrintf(0, 0, "Robox Online");
-         BlynkInterface::lcdPrintf(0, 0, WiFi.localIP().toString().c_str());
+         BlynkInterface::lcdPrintf(0, 1, WiFi.localIP().toString().c_str());
       }
    }
    else if (state == READY)
