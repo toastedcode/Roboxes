@@ -10,7 +10,9 @@ const int ServoMotor::MAX_PWM;
 
 ServoMotor::ServoMotor() :
    pin(0),
-   angle(MIN_ANGLE)
+   angle(MIN_ANGLE),
+   limitMin(MIN_ANGLE),
+   limitMax(MAX_ANGLE)
 {
    // Nothing to do here.
 }
@@ -28,7 +30,6 @@ ServoMotor::~ServoMotor()
    // Nothing to do here.
 }
 
-
 void ServoMotor::attach(
    const int& pin)
 {
@@ -38,6 +39,26 @@ void ServoMotor::attach(
    servo.attach(pin);
 }
 
+void ServoMotor::getLimits(
+   int& limitMin,
+   int& limitMax) const
+
+{
+   limitMin = this->limitMin;
+   limitMax = this->limitMax;
+}
+
+void ServoMotor::setLimits(
+   const int& limitMin,
+   const int& limitMax)
+{
+   this->limitMin = limitMin;
+   this->limitMax = limitMax;
+
+   rotate(getAngle());
+}
+
+
 inline int ServoMotor::getAngle()
 {
    return (servo.read());
@@ -46,7 +67,7 @@ inline int ServoMotor::getAngle()
 void ServoMotor::rotate(
    int angle)
 {
-   servo.write(constrain(angle, MIN_ANGLE, MAX_ANGLE));
+   servo.write(constrain(angle, limitMin, limitMax));
 }
 
 void ServoMotor::setPwm(

@@ -21,6 +21,14 @@ public:
    void attach(
       const int& pin);
 
+   void getLimits(
+      int& limitMin,
+      int& limitMax) const;
+
+   void setLimits(
+      const int& limitMin,
+      const int& limitMax);
+
    // Sets the speed of the two motors in the pair.
    void rotate(
       // The angle the servo should rotate to.
@@ -56,4 +64,8 @@ private:
 
    // The angle of the servo.
    int angle;
+
+   int limitMin;
+
+   int limitMax;
 };
