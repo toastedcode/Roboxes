@@ -9,10 +9,6 @@
 
 ESP8266WebServer ConfigServer::server(80);
 
-DeviceConfig ConfigServer::deviceConfig;
-
-WifiConfig ConfigServer::wifiConfig;
-
 // **************************************************************************
 //                                 Public
 // **************************************************************************
@@ -21,37 +17,18 @@ void ConfigServer::begin()
 {
    SPIFFS.begin();
   
-   // Load config from EEPROM.
-   deviceConfig = EepromUtils::getDeviceConfig();
-   wifiConfig = EepromUtils::getWifiConfig();
-
-   Serial.printf("Device name: %s\n", deviceConfig.deviceName);
-   Serial.printf("Authorization code: %s\n", deviceConfig.authCode);
-   Serial.printf("SSID: %s\n", wifiConfig.ssid);
-   Serial.printf("Password: %s\n", wifiConfig.password);
-  
    // Setup  handlers.
-   server.on("/", ConfigServer::handleRoot);
+   server.on("/", handleRoot);
    server.onNotFound(handleNotFound);
   
    server.begin();
   
-  Serial.println("HTTP server started.");
+   Serial.println("HTTP server started.");
 }
 
 void ConfigServer::run()
 {
    server.handleClient();
-}
-
-DeviceConfig ConfigServer::getDeviceConfig()
-{
-  return (deviceConfig);
-}
-
-WifiConfig ConfigServer::getWifiConfig()
-{
-   return (wifiConfig);
 }
 
 // **************************************************************************
@@ -60,6 +37,18 @@ WifiConfig ConfigServer::getWifiConfig()
 
 void ConfigServer::handleRoot()
 {
+   // Load config from EEPROM.
+   DeviceConfig deviceConfig;
+   WifiConfig wifiConfig;
+   EepromUtils::getDeviceConfig(deviceConfig);
+   EepromUtils::getWifiConfig(wifiConfig);
+
+   Serial.println("Current config:");
+   Serial.printf("   Device name: %s\n", deviceConfig.deviceName);
+   Serial.printf("   Authorization code: %s\n", deviceConfig.authCode);
+   Serial.printf("   SSID: %s\n", wifiConfig.ssid);
+   Serial.printf("   Password: %s\n", wifiConfig.password);
+  
    String newDeviceName = server.arg("id");
    String newAuthCode = server.arg("authcode");
    String newSsid = server.arg("ssid");
@@ -69,42 +58,42 @@ void ConfigServer::handleRoot()
    bool wifiConfigChanged = false;
 
    if (server.hasArg("id") && 
-       (strncmp(newDeviceName.c_str(), deviceConfig.deviceName, sizeof(deviceConfig.deviceName)) != 0))
+       (strncmp(newDeviceName.c_str(), deviceConfig.deviceName, DEVICE_NAME_SIZE) != 0))
    {
-      strncpy(deviceConfig.deviceName, newDeviceName.c_str(), sizeof(deviceConfig.deviceName));   
+      strncpy(deviceConfig.deviceName, newDeviceName.c_str(), DEVICE_NAME_SIZE);   
       deviceConfigChanged = true;
    }
 
    if (server.hasArg("authcode") && 
-       (strncmp(newAuthCode.c_str(), deviceConfig.authCode, sizeof(deviceConfig.authCode)) != 0))
+       (strncmp(newAuthCode.c_str(), deviceConfig.authCode, AUTH_CODE_SIZE) != 0))
    {
-      strncpy(deviceConfig.authCode, newAuthCode.c_str(), sizeof(deviceConfig.authCode));    
+      strncpy(deviceConfig.authCode, newAuthCode.c_str(), AUTH_CODE_SIZE);    
       deviceConfigChanged = true;
    }
 
    if (deviceConfigChanged == true)
    {
-      Serial.printf("Updating device config [%s, %s].", deviceConfig.deviceName, deviceConfig.authCode);
+      Serial.printf("Updating device config [%s, %s].\n", deviceConfig.deviceName, deviceConfig.authCode);
       EepromUtils::setDeviceConfig(deviceConfig);
    }
    
    if (server.hasArg("ssid") && 
-       (strncmp(newSsid.c_str(), wifiConfig.ssid, sizeof(wifiConfig.ssid)) != 0))
+       (strncmp(newSsid.c_str(), wifiConfig.ssid, SSID_SIZE) != 0))
    {
-      strncpy(wifiConfig.ssid, newSsid.c_str(), sizeof(wifiConfig.ssid));      
+      strncpy(wifiConfig.ssid, newSsid.c_str(), SSID_SIZE);
       wifiConfigChanged = true;
    }
 
    if (server.hasArg("password") && 
-       (strncmp(newSsid.c_str(), wifiConfig.password, sizeof(wifiConfig.password)) != 0))
+       (strncmp(newSsid.c_str(), wifiConfig.password, PASSWORD_SIZE) != 0))
    {
-      strncpy(wifiConfig.password, newPassword.c_str(), sizeof(wifiConfig.password));   
+      strncpy(wifiConfig.password, newPassword.c_str(), PASSWORD_SIZE);   
       wifiConfigChanged = true;
    }
   
    if (wifiConfigChanged == true)
    {
-      Serial.printf("Updating wifi config [%s, %s].", wifiConfig.ssid, wifiConfig.password);
+      Serial.printf("Updating wifi config [%s, %s].\n", wifiConfig.ssid, wifiConfig.password);
       EepromUtils::setWifiConfig(wifiConfig);
    }
    
@@ -129,6 +118,12 @@ void ConfigServer::handleRoot()
 
       if (deviceConfigChanged || wifiConfigChanged)
       {
+         Serial.println("New config:"); 
+         Serial.printf("   Device name: %s\n", deviceConfig.deviceName);
+         Serial.printf("   Authorization code: %s\n", deviceConfig.authCode);
+         Serial.printf("   SSID: %s\n", wifiConfig.ssid);
+         Serial.printf("   Password: %s\n", wifiConfig.password);
+   
          content.replace("%info", "All changes saved.  Resetting Robox to apply changes.");
       }
       else

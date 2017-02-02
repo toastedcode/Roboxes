@@ -1,9 +1,9 @@
 #include "Robox.hpp"
 
-static const int LEFT_MOTOR_DIRECTION_PIN = 0;
-static const int LEFT_MOTOR_SPEED_PIN = 5;
-static const int RIGHT_MOTOR_DIRECTION_PIN = 2;
-static const int RIGHT_MOTOR_SPEED_PIN = 4;
+static const int LEFT_MOTOR_DIRECTION_PIN = 2;
+static const int LEFT_MOTOR_SPEED_PIN = 4;
+static const int RIGHT_MOTOR_DIRECTION_PIN = 0;
+static const int RIGHT_MOTOR_SPEED_PIN = 5;
 static const int SERVO_1_PIN = 14;
 static const int SERVO_2_PIN = 12;
 static const int SERVO_3_PIN = 13;  // TODO: find unique pins
@@ -45,7 +45,8 @@ void Robox::begin()
    // Initialize components.
    //
 
-   motors.drive(Motor::MIN_SPEED, MotorPair::MIN_YAW);
+   motors.leftMotor.drive(Motor::MIN_SPEED);
+   motors.rightMotor.drive(Motor::MIN_SPEED);
 
    for (int i = SERVO_FIRST; i < SERVO_LAST; i++)
    {

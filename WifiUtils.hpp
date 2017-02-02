@@ -7,6 +7,8 @@ public:
 
    static bool isConnected();
    
-   static void setupWifi();
+   static void setupWifi(
+     const char* ssid,
+     const char* password);
 
 };
