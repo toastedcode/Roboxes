@@ -84,8 +84,10 @@ void loop()
          MyRobox.begin();
 
          BlynkInterface::lcdClear();
-         BlynkInterface::lcdPrintf(0, 0, "Robox Online");
+         BlynkInterface::lcdPrintf(0, 0, deviceConfig.deviceName);
          BlynkInterface::lcdPrintf(0, 1, WiFi.localIP().toString().c_str());
+
+         Blynk.syncAll();
       }
    }
    else if (state == READY)

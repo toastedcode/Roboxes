@@ -45,7 +45,8 @@ void Robox::begin()
    // Initialize components.
    //
 
-   motors.drive(Motor::MIN_SPEED, MotorPair::MIN_YAW);
+   motors.leftMotor.drive(Motor::MIN_SPEED);
+   motors.rightMotor.drive(Motor::MIN_SPEED);
 
    for (int i = SERVO_FIRST; i < SERVO_LAST; i++)
    {

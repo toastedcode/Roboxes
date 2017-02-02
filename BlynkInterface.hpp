@@ -154,7 +154,6 @@ inline void updateMotors(
       }
    }
 
-   //BLYNK_PRINT.printf("motors.leftMotor.drive(%d), motors.rightMotor.drive(%d)\n", leftMotorSpeed, rightMotorSpeed);
    MyRobox.motors.leftMotor.drive(leftMotorSpeed);
    MyRobox.motors.rightMotor.drive(rightMotorSpeed);
 }
