@@ -1,5 +1,6 @@
 #pragma once
 
+#include <DNSServer.h>
 #include <ESP8266WebServer.h>
 
 class ConfigServer
@@ -18,5 +19,7 @@ private:
    static void handleNotFound();
 
    static ESP8266WebServer server;
+
+   static DNSServer dnsServer;
 };
 

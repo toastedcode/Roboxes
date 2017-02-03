@@ -53,6 +53,8 @@ public:
    static void setWifiConfig(
       const WifiConfig& wifiConfig);
 
+   static void clearEeprom();
+
 private:    
 
   static void initializeEeprom();

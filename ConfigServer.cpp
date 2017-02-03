@@ -2,12 +2,23 @@
 
 #include "ConfigServer.hpp"
 #include "EepromUtils.hpp"
+#include "WifiUtils.hpp"
+
+// **************************************************************************
+//                                Constants
+// **************************************************************************
+
+const byte DNS_PORT = 53;
+
+const byte HTTP_PORT = 80;
 
 // **************************************************************************
 //                                Static members
 // **************************************************************************
 
-ESP8266WebServer ConfigServer::server(80);
+ESP8266WebServer ConfigServer::server(HTTP_PORT);
+
+DNSServer ConfigServer::dnsServer;
 
 // **************************************************************************
 //                                 Public
@@ -16,18 +27,24 @@ ESP8266WebServer ConfigServer::server(80);
 void ConfigServer::begin()
 {
    SPIFFS.begin();
+
+   dnsServer.start(DNS_PORT, "*", WifiUtils::getIpAddress());
+
+   Serial.printf("DNS server started.  Directing all traffic to %s\n", WifiUtils::getIpAddress().toString().c_str());
   
    // Setup  handlers.
-   server.on("/", handleRoot);
-   server.onNotFound(handleNotFound);
+   //server.on("/", ConfigServer::handleRoot);  // TODO: What about this?
+   //server.onNotFound(ConfigServer::handleNotFound);  // TODO: What about this?
+   server.onNotFound(ConfigServer::handleRoot);
   
    server.begin();
-  
+
    Serial.println("HTTP server started.");
 }
 
 void ConfigServer::run()
 {
+   dnsServer.processNextRequest();
    server.handleClient();
 }
 

@@ -6,6 +6,7 @@
 #include "BlynkInterface.hpp"
 #include "ConfigServer.hpp"
 #include "EepromUtils.hpp"
+#include "FactoryReset.hpp"
 #include "Roboxes.h"
 #include "WifiUtils.hpp"
 
@@ -35,6 +36,8 @@ void setup()
 
 void loop()
 {
+   FactoryReset::run();
+   
    if (state == INIT)
    {
       Serial.println("Setting up wifi");
@@ -92,8 +95,8 @@ void loop()
    }
    else if (state == READY)
    {
-       ConfigServer::run();
-       Blynk.run();
-       MyRobox.run();
+      ConfigServer::run();
+      Blynk.run();
+      MyRobox.run();
    }
 }

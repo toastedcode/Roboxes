@@ -56,6 +56,16 @@ void EepromUtils::setWifiConfig(
    EEPROM.commit();  
  }
 
+ void EepromUtils::clearEeprom()
+ {
+    for (int i = 0; i < 512; i++)
+    {
+       EEPROM.write(i, 0);
+    }  
+    
+    EEPROM.commit();
+ }
+
 // **************************************************************************
 //                                 Private
 // **************************************************************************
@@ -72,10 +82,7 @@ void EepromUtils::setWifiConfig(
    {
       Serial.println("Initializing EEPROM");
 
-      for (int i = 0; i < 512; i++)
-      {
-         EEPROM.write(i, 0);
-      }
+      clearEeprom();
        
       EEPROM.put(EEPROM_BEGIN_ADDR, EEPROM_STAMP);
 
