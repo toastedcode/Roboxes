@@ -59,7 +59,7 @@ void ServoMotor::setLimits(
 }
 
 
-inline int ServoMotor::getAngle()
+int ServoMotor::getAngle()
 {
    return (servo.read());
 }

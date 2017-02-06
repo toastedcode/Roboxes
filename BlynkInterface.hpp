@@ -19,7 +19,8 @@
 // V7:  servo 1 slider
 // V8:  servo 2 min slider
 // V9:  servo 2 max slider
-// V10:  servo 2 slider
+// V10: servo 2 slider
+// V15: pair servos
 // TAB 3
 // V11: joystick
 // TAB 4
@@ -32,6 +33,8 @@ static const int REVERSE = Motor::MIN_SPEED;
 
 static const int CLOCKWISE = Motor::MAX_SPEED;
 static const int COUNTERCLOCKWISE = Motor::MIN_SPEED;
+
+static bool pairServos;
 
 class BlynkInterface
 {
@@ -84,6 +87,18 @@ inline void updateServo(
 
    BLYNK_PRINT.printf("servos[%d].rotate[%d]\n", servoId, mappedAngle);
    MyRobox.servos[servoId].rotate(angle);
+
+   if (pairServos)
+   {
+      ServoId otherServoId = ((servoId == SERVO_1) ? SERVO_2 : SERVO_1);
+      
+      MyRobox.servos[otherServoId].getLimits(limitMin, limitMax);
+
+      int mappedAngle = map(angle, ServoMotor::MIN_ANGLE, ServoMotor::MAX_ANGLE, limitMin, limitMax);
+
+      BLYNK_PRINT.printf("servos[%d].rotate[%d]\n", otherServoId, mappedAngle);
+      MyRobox.servos[otherServoId].rotate(angle);
+   }
 }
 
 inline void updateMotors(
@@ -280,4 +295,12 @@ BLYNK_WRITE(V14)
 {
    BLYNK_PRINT.printf("rover.setEnabled(%d)\n", param.asInt());
    MyRobox.rover.setEnabled(param.asInt());
+}
+
+// V14: pair servos button
+BLYNK_WRITE(V15)
+{
+   pairServos = param.asInt();
+   BLYNK_PRINT.printf("pairServos = %s\n", (pairServos ? "true" : "false"));
+   updateServo(SERVO_1, MyRobox.servos[0].getAngle());
 }
