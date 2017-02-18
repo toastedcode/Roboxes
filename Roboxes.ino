@@ -23,6 +23,7 @@ enum RoboxState
 
 WifiConfig wifiConfig;
 DeviceConfig deviceConfig;
+BlynkConfig blynkConfig;
 
 RoboxState state = INIT;
 
@@ -46,12 +47,14 @@ void loop()
       EepromUtils::begin();
       EepromUtils::getWifiConfig(wifiConfig);
       EepromUtils::getDeviceConfig(deviceConfig);
+      EepromUtils::getBlynkConfig(blynkConfig);
 
       Serial.println("Device config:"); 
       Serial.printf("   Device name: %s\n", deviceConfig.deviceName);
-      Serial.printf("   Authorization code: %s\n", deviceConfig.authCode);
       Serial.printf("   SSID: %s\n", wifiConfig.ssid);
       Serial.printf("   Password: %s\n", wifiConfig.password);
+      Serial.printf("   Blynk server: %s\n", blynkConfig.server);
+      Serial.printf("   Authorization code: %s\n", blynkConfig.authCode);
       
       WifiUtils::setupWifi(wifiConfig.ssid, wifiConfig.password);
    }
@@ -59,9 +62,14 @@ void loop()
    {
       if (WifiUtils::isConnected() == true)
       {
-         Serial.printf("Connecting to Blynk server. (auth code = \"%s\")\n", deviceConfig.authCode);
+         if (strlen(blynkConfig.server) == 0)
+         {
+            strncpy(blynkConfig.server, BLYNK_DEFAULT_DOMAIN, SERVER_NAME_SIZE); 
+         }
+      
+         Serial.printf("Connecting to Blynk server. (server = \"%s\", auth code = \"%s\")\n", blynkConfig.server, blynkConfig.authCode);
          state = SETUP_BLYNK;
-         Blynk.config(deviceConfig.authCode);
+         Blynk.config(blynkConfig.authCode, blynkConfig.server, BLYNK_DEFAULT_PORT);
       }
       else
       {

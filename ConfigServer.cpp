@@ -57,22 +57,27 @@ void ConfigServer::handleRoot()
    // Load config from EEPROM.
    DeviceConfig deviceConfig;
    WifiConfig wifiConfig;
+   BlynkConfig blynkConfig;
    EepromUtils::getDeviceConfig(deviceConfig);
    EepromUtils::getWifiConfig(wifiConfig);
+   EepromUtils::getBlynkConfig(blynkConfig);
 
    Serial.println("Current config:");
    Serial.printf("   Device name: %s\n", deviceConfig.deviceName);
-   Serial.printf("   Authorization code: %s\n", deviceConfig.authCode);
    Serial.printf("   SSID: %s\n", wifiConfig.ssid);
    Serial.printf("   Password: %s\n", wifiConfig.password);
+   Serial.printf("   Blynk server: %s\n", blynkConfig.server);
+   Serial.printf("   Authorization code: %s\n", blynkConfig.authCode);
   
    String newDeviceName = server.arg("id");
-   String newAuthCode = server.arg("authcode");
    String newSsid = server.arg("ssid");
    String newPassword = server.arg("password");
+   String newServer = server.arg("server");
+   String newAuthCode = server.arg("authcode");
 
    bool deviceConfigChanged = false;
    bool wifiConfigChanged = false;
+   bool blynkConfigChanged = false;
 
    if (server.hasArg("id") && 
        (strncmp(newDeviceName.c_str(), deviceConfig.deviceName, DEVICE_NAME_SIZE) != 0))
@@ -81,16 +86,9 @@ void ConfigServer::handleRoot()
       deviceConfigChanged = true;
    }
 
-   if (server.hasArg("authcode") && 
-       (strncmp(newAuthCode.c_str(), deviceConfig.authCode, AUTH_CODE_SIZE) != 0))
-   {
-      strncpy(deviceConfig.authCode, newAuthCode.c_str(), AUTH_CODE_SIZE);    
-      deviceConfigChanged = true;
-   }
-
    if (deviceConfigChanged == true)
    {
-      Serial.printf("Updating device config [%s, %s].\n", deviceConfig.deviceName, deviceConfig.authCode);
+      Serial.printf("Updating device config [%s].\n", deviceConfig.deviceName);
       EepromUtils::setDeviceConfig(deviceConfig);
    }
    
@@ -113,6 +111,26 @@ void ConfigServer::handleRoot()
       Serial.printf("Updating wifi config [%s, %s].\n", wifiConfig.ssid, wifiConfig.password);
       EepromUtils::setWifiConfig(wifiConfig);
    }
+
+   if ((server.hasArg("server") && 
+       (strncmp(newServer.c_str(), blynkConfig.server, SERVER_NAME_SIZE) != 0)))
+   {
+      strncpy(blynkConfig.server, newServer.c_str(), SERVER_NAME_SIZE);    
+      blynkConfigChanged = true;
+   }
+
+   if (server.hasArg("authcode") && 
+       (strncmp(newAuthCode.c_str(), blynkConfig.authCode, AUTH_CODE_SIZE) != 0))
+   {
+      strncpy(blynkConfig.authCode, newAuthCode.c_str(), AUTH_CODE_SIZE);    
+      blynkConfigChanged = true;
+   }
+
+   if (blynkConfigChanged == true)
+   {
+      Serial.printf("Updating blynk config [%s, %s].\n", blynkConfig.server, blynkConfig.authCode);
+      EepromUtils::setBlynkConfig(blynkConfig);
+   }
    
    File file = SPIFFS.open("/config.html", "r");
    if (!file)
@@ -129,17 +147,19 @@ void ConfigServer::handleRoot()
       String content = file.readString();
 
       content.replace("%name", deviceConfig.deviceName);
-      content.replace("%authcode", deviceConfig.authCode);
       content.replace("%ssid", wifiConfig.ssid);
       content.replace("%password", wifiConfig.password);
+      content.replace("%server", blynkConfig.server);
+      content.replace("%authcode", blynkConfig.authCode);
 
-      if (deviceConfigChanged || wifiConfigChanged)
+      if (deviceConfigChanged || wifiConfigChanged || blynkConfigChanged)
       {
          Serial.println("New config:"); 
          Serial.printf("   Device name: %s\n", deviceConfig.deviceName);
-         Serial.printf("   Authorization code: %s\n", deviceConfig.authCode);
          Serial.printf("   SSID: %s\n", wifiConfig.ssid);
          Serial.printf("   Password: %s\n", wifiConfig.password);
+         Serial.printf("   Blynk server: %s\n", blynkConfig.server);
+         Serial.printf("   Authorization code: %s\n", blynkConfig.authCode);
    
          content.replace("%info", "All changes saved.  Resetting Robox to apply changes.");
       }

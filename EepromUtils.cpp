@@ -17,7 +17,9 @@ static const int EEPROM_STAMP_ADDR = EEPROM_BEGIN_ADDR;
   
 static const int DEVICE_CONFIG_EEPROM_ADDR = EEPROM_STAMP_ADDR + sizeof(EepromStamp);
   
-static const int WIFI_CONFIG_EEPROM_ADDR = DEVICE_CONFIG_EEPROM_ADDR + sizeof(DeviceConfig);  
+static const int WIFI_CONFIG_EEPROM_ADDR = DEVICE_CONFIG_EEPROM_ADDR + sizeof(DeviceConfig);
+
+static const int BLYNK_CONFIG_EEPROM_ADDR = WIFI_CONFIG_EEPROM_ADDR + sizeof(WifiConfig);  
 
 // **************************************************************************
 //                                 Public
@@ -31,26 +33,39 @@ static const int WIFI_CONFIG_EEPROM_ADDR = DEVICE_CONFIG_EEPROM_ADDR + sizeof(De
  }
 
 void EepromUtils::getDeviceConfig(
-  DeviceConfig& deviceConfig)
+   DeviceConfig& deviceConfig)
 { 
    EEPROM.get(DEVICE_CONFIG_EEPROM_ADDR, deviceConfig); 
 }
 
 void EepromUtils::setDeviceConfig(
-  const DeviceConfig& deviceConfig)
+   const DeviceConfig& deviceConfig)
 {
    EEPROM.put(DEVICE_CONFIG_EEPROM_ADDR, deviceConfig);
    EEPROM.commit();
 }
 
+void EepromUtils::getBlynkConfig(
+   BlynkConfig& blynkConfig)
+{ 
+   EEPROM.get(BLYNK_CONFIG_EEPROM_ADDR, blynkConfig); 
+}
+
+void EepromUtils::setBlynkConfig(
+   const BlynkConfig& blynkConfig)
+{
+   EEPROM.put(BLYNK_CONFIG_EEPROM_ADDR, blynkConfig);
+   EEPROM.commit();
+}
+
 void EepromUtils::getWifiConfig(
-     WifiConfig& wifiConfig)
+   WifiConfig& wifiConfig)
 {
    EEPROM.get(WIFI_CONFIG_EEPROM_ADDR, wifiConfig);
 }
 
 void EepromUtils::setWifiConfig(
-    const WifiConfig& wifiConfig)
+   const WifiConfig& wifiConfig)
  {
    EEPROM.put(WIFI_CONFIG_EEPROM_ADDR, wifiConfig);
    EEPROM.commit();  

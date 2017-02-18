@@ -1,5 +1,7 @@
 #pragma once
 
+static const int SERVER_NAME_SIZE = 20 + 1;
+
 static const int DEVICE_NAME_SIZE = 20 + 1;
 
 static const int AUTH_CODE_SIZE = 32 + 1;
@@ -12,12 +14,9 @@ struct DeviceConfig
 {
    char deviceName[DEVICE_NAME_SIZE];
 
-   char authCode[AUTH_CODE_SIZE];
-
    inline DeviceConfig()
    {
       memset(deviceName, 0, DEVICE_NAME_SIZE);
-      memset(authCode, 0, AUTH_CODE_SIZE);
    }
 };
 
@@ -34,6 +33,19 @@ struct WifiConfig
    }
 };
 
+struct BlynkConfig
+{
+   char server[SERVER_NAME_SIZE];
+
+   char authCode[AUTH_CODE_SIZE];
+
+   inline BlynkConfig()
+   {
+      memset(server, 0, SERVER_NAME_SIZE);
+      memset(authCode, 0, AUTH_CODE_SIZE);
+   }
+};
+
 class EepromUtils
 {
 
@@ -45,7 +57,13 @@ public:
       DeviceConfig& deviceConfig);
 
    static void setDeviceConfig(
-    const DeviceConfig& deviceConfig);
+      const DeviceConfig& deviceConfig);
+
+    static void getBlynkConfig(
+       BlynkConfig& blynkConfig);
+
+    static void setBlynkConfig(
+       const BlynkConfig& blynkConfig);
 
    static void getWifiConfig(
     WifiConfig& wifiConfig);
